@@ -1,10 +1,10 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template
 import pandas as pd
 
 app = Flask(__name__)
 
-# Load the CSV file into a pandas DataFrame
-df = pd.read_csv('data.csv')
+# Load the Excel file into a pandas DataFrame
+df = pd.read_excel('data.xlsx')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -18,24 +18,15 @@ def index():
         filtered_df = df[(df['ColumnA'] % 2 == 0) & (df['ColumnB'] == column_b) & (df['ColumnC'].isin([column_c, 'Dallas', 'Austin']))]
         
         if not filtered_df.empty:
-            # Generate a downloadable CSV file with the filtered data
-            filtered_df[['Column x']].to_csv('filtered_data.csv', index=False)
-            
-            # Send the file as an attachment in email
-            # Replace the placeholders with your email configuration
-            send_email('recipient@example.com', 'Filtered Data', 'Please find the attached file.', 'filtered_data.csv')
+            # Generate a downloadable Excel file with the filtered data
+            filtered_df[['Column x']].to_excel('filtered_data.xlsx', index=False)
             
             # Return a message to the user
-            return 'Filtered data has been sent to your email.'
+            return 'Filtered data has been generated as an Excel file.'
         else:
             return 'No data matching the specified conditions found.'
     
     return render_template('index.html')
-
-def send_email(recipient, subject, body, attachment_path):
-    # Add your email sending logic here
-    # You can use libraries like smtplib or third-party services like SendGrid to send the email
-    pass
 
 if __name__ == '__main__':
     app.run()
